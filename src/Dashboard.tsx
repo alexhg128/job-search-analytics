@@ -7,10 +7,13 @@ import { Container, Spinner } from "react-bootstrap";
 import CompanyAnalytics from "./Dashboard/CompanyAnalytics";
 import InterviewAnalytics from "./Dashboard/InterviewAnalytics";
 import OverallAnalytics from "./Dashboard/OverallAnalytics";
+import { useNavigate } from "react-router-dom";
 
 var Dashboard = () => {
   let { sheet_id } = useParams();
   let { sheet_name } = useParams();
+
+  const navigate = useNavigate();
 
   if (sheet_name === undefined) {
     sheet_name = "Applications";
@@ -53,7 +56,7 @@ var Dashboard = () => {
   }, [pyodide, hasLoadPyodideBeenCalled, setIsPyodideLoading]);
 
   useEffect(() => {
-    if (!isPyodideLoading) {
+    if (!isPyodideLoading && csvFile !== undefined) {
       const evaluatePython = async (pyodide, pythonCode) => {
         try {
           return await pyodide.runPython(pythonCode);
@@ -66,22 +69,18 @@ var Dashboard = () => {
       (async function () {
         evaluatePython(pyodide.current, pythonCode).then((data) => {
           console.log(data);
+          if(data === "Invalid file" && csvFile !== undefined) {
+            navigate('/invalid')
+            return;
+          }
           data = data.replaceAll("NaN", 0);
-          console.log(data);
           data = JSON.parse(data);
           setPyodideOutput(data);
           setLoadedPythonData(true);
-          console.log(data);
-          console.log(data["sankey_routes"]);
-          console.log(
-            [["Country", "Applications"]].concat(
-              Object.entries(data.applications_per_country)
-            )
-          );
         });
       })();
     }
-  }, [isPyodideLoading, pyodide, csvFile, loadedPythonData]);
+  }, [isPyodideLoading, pyodide, csvFile, loadedPythonData, navigate]);
 
   useEffect(() => {
     if (!csvDownloaded) {
@@ -95,11 +94,12 @@ var Dashboard = () => {
             setCsvDownloaded(true);
             localStorage.setItem("csv", t);
           })
-          .catch((err) => console.log(err));
+          .catch((err) => {
+            console.log(err)
+            navigate('/invalid')
+          });
       })();
     }
-
-    setCsvFile(true);
   }, [csvDownloaded, csvFile, url]);
 
   return (

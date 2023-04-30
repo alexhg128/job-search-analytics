@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {
   createBrowserRouter,
@@ -11,12 +10,18 @@ import Dashboard from './Dashboard';
 import ErrorPage from './ErrorPage';
 import PyodideProvider from './Python/PyodideProvider';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Home from './Home';
+import InvalidFilePage from './InvalidFilePage';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App/>,
+    element: <Home/>,
     errorElement: <ErrorPage/>
+  },
+  {
+    path: "/invalid",
+    element: <InvalidFilePage/>
   },
   {
     path: "/dashboard/:sheet_id",
