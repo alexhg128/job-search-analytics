@@ -11,3 +11,28 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+.anychart-credits-text {
+  display: none !important;
+}
+
+.anychart-credits-logo {
+  display: none !important;
+}
+
+body {
+  background-color: #152238 !important;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+  color: white;
+}
+
+path[data-ac-wrapper-id="779"] {
+  fill: #192841;
+}
+
+div.timeline text {
+  fill: white
+}
