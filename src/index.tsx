@@ -12,6 +12,9 @@ import PyodideProvider from './Python/PyodideProvider';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Home from './Home';
 import InvalidFilePage from './InvalidFilePage';
+import ReactGA from 'react-ga4';
+
+ReactGA.initialize("G-R9R6XB11HY");
 
 const router = createBrowserRouter([
   {
