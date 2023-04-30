@@ -8,6 +8,7 @@ import CompanyAnalytics from "./Dashboard/CompanyAnalytics";
 import InterviewAnalytics from "./Dashboard/InterviewAnalytics";
 import OverallAnalytics from "./Dashboard/OverallAnalytics";
 import { useNavigate } from "react-router-dom";
+import CryptoJS, { AES } from "crypto-js";
 
 var Dashboard = () => {
   let { sheet_id } = useParams();
@@ -19,16 +20,28 @@ var Dashboard = () => {
     sheet_name = "Applications";
   }
 
+  if (!/.{1,}\.{1,}/.test(sheet_id)) {
+    navigate("/invalid");
+  }
+
+  let key = parseInt(sheet_id.split(".")[0], 36).toString();
+  let id = sheet_id.split(".")[1].replaceAll("-", "/");
+
+  if (key != "sheet") {
+    id = AES.decrypt(id, key).toString(CryptoJS.enc.Utf8);
+    console.log(id);
+  }
+
   const [csvDownloaded, setCsvDownloaded] = useState(false);
   const [csvFile, setCsvFile] = useState(undefined);
 
-  localStorage.setItem("sheet_id", sheet_id);
+  localStorage.setItem("sheet_id", id);
 
   const indexURL = "https://cdn.jsdelivr.net/pyodide/dev/full/";
 
   var url =
     "https://docs.google.com/spreadsheets/d/" +
-    sheet_id +
+    id +
     "/gviz/tq?tqx=out:csv&sheet=" +
     sheet_name;
 
@@ -69,8 +82,8 @@ var Dashboard = () => {
       (async function () {
         evaluatePython(pyodide.current, pythonCode).then((data) => {
           console.log(data);
-          if(data === "Invalid file" && csvFile !== undefined) {
-            navigate('/invalid')
+          if (data === "Invalid file" && csvFile !== undefined) {
+            navigate("/invalid");
             return;
           }
           data = data.replaceAll("NaN", 0);
@@ -95,8 +108,8 @@ var Dashboard = () => {
             localStorage.setItem("csv", t);
           })
           .catch((err) => {
-            console.log(err)
-            navigate('/invalid')
+            console.log(err);
+            navigate("/invalid");
           });
       })();
     }

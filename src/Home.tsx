@@ -1,3 +1,4 @@
+import { AES } from "crypto-js";
 import React, { useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -19,50 +20,58 @@ var Home = () => {
     return url.match(re)[3];
   };
 
+  const offuscate = (id: string): string => {
+    let key = Math.random().toString().split(".")[1];
+    let hiddenId = AES.encrypt(id, key).toString().replaceAll("/", "-");
+    return parseInt(key).toString(36) + "." + hiddenId;
+  };
+
   const validateInputChange = (event) => {
-    if(timer !== undefined) {
-        clearTimeout(timer);
+    if (timer !== undefined) {
+      clearTimeout(timer);
     }
-    setTimer(setTimeout(() => {
-        if(validate(event.target.value)) {
-            setIsValid(true);
-            setIsInvalid(false);
+    setTimer(
+      setTimeout(() => {
+        if (validate(event.target.value)) {
+          setIsValid(true);
+          setIsInvalid(false);
         } else {
-            setIsValid(false);
-            setIsInvalid(true);
+          setIsValid(false);
+          setIsInvalid(true);
         }
-    }, 3000));
+      }, 3000)
+    );
   };
 
   const submitHandler = (event) => {
     event.preventDefault();
-    if(timer !== undefined) {
-        clearTimeout(timer);
+    if (timer !== undefined) {
+      clearTimeout(timer);
     }
-    if(validate(event.target[0].value)) {
-        setIsValid(true);
-        setIsInvalid(false);
-        navigate('/dashboard/' + getId(event.target[0].value))
+    if (validate(event.target[0].value)) {
+      setIsValid(true);
+      setIsInvalid(false);
+      navigate("/dashboard/" + offuscate(getId(event.target[0].value)));
     } else {
-        setIsValid(false);
-        setIsInvalid(true);
+      setIsValid(false);
+      setIsInvalid(true);
     }
   };
 
   const pasteHandler = (event) => {
     setTimeout(() => {
-        if(timer !== undefined) {
-            clearTimeout(timer);
-        }
-        if(validate(event.target.value)) {
-            setIsValid(true);
-            setIsInvalid(false);
-            navigate('/dashboard/' + getId(event.target.value))
-        } else {
-            setIsValid(false);
-            setIsInvalid(true);
-        }
-    }, 0)
+      if (timer !== undefined) {
+        clearTimeout(timer);
+      }
+      if (validate(event.target.value)) {
+        setIsValid(true);
+        setIsInvalid(false);
+        navigate("/dashboard/" + offuscate(getId(event.target.value)));
+      } else {
+        setIsValid(false);
+        setIsInvalid(true);
+      }
+    }, 0);
   };
 
   return (
@@ -97,7 +106,8 @@ var Home = () => {
                 <Form.Text className="text-muted">
                   Please enter your source spreadsheet here, the spreadsheet
                   must use this <a href="https://docs.google.com">template</a>,
-                  be public, have a sheet named 'Applications' and be hosted on Google Sheets.
+                  be public, have a sheet named 'Applications' and be hosted on
+                  Google Sheets.
                 </Form.Text>
                 <Form.Control.Feedback type="invalid">
                   Please enter a valid and public Google Docs URL.
