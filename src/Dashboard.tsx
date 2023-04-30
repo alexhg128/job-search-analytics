@@ -27,7 +27,7 @@ var Dashboard = () => {
   let key = parseInt(sheet_id.split(".")[0], 36).toString();
   let id = sheet_id.split(".")[1].replaceAll("-", "/");
 
-  if (key != "sheet") {
+  if (key !== "sheet") {
     id = AES.decrypt(id, key).toString(CryptoJS.enc.Utf8);
     console.log(id);
   }
@@ -113,7 +113,7 @@ var Dashboard = () => {
           });
       })();
     }
-  }, [csvDownloaded, csvFile, url]);
+  }, [csvDownloaded, csvFile, url, navigate]);
 
   return (
     <>
